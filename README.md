@@ -6,13 +6,13 @@ simplest online-softmax notebook for explain Flash Attention
 ### softmax 
 
 $$
-\tilde{x}_i =\frac{e^{x_i}}{\sum_j^Ne^{x_j}}
+\tilde{x}_i=\frac{e^{x_i}}{\sum_j^Ne^{x_j}}
 $$
 
 ### safe softmax
 
 $$
-\tilde{x}_i =\frac{e^{x_i-\max(x_{:N})}}{\sum_j^Ne^{x_j-\max(x_{:N})}}
+\tilde{x}_i=\frac{e^{x_i-\max(x_{:N})}}{\sum_j^Ne^{x_j-\max(x_{:N})}}
 $$
 
 ### online softmax
@@ -38,7 +38,7 @@ $$
 3. we could softmax with updated numerator and denominator
 
 $$
-\tilde{x}_{i} =\frac{e^{x_i-\max(x_{:N+1})}}{l_{N+1}}
+\tilde{x}_{i}=\frac{e^{x_i-\max(x_{:N+1})}}{l_{N+1}}
 $$
 
 ### block online softmax
@@ -56,17 +56,16 @@ m^{(2)} &= \max(x_{N+1:2N}) \\
 \end{align}
 $$
 
-2. it’s easy to update global $m$ and $l$ 
+2. it’s easy to update global $m,l$ 
 $$
 \begin{align}
-m=\max({x_{:2N}}) &= \max(\max({x_{:N}}), \max(x_{N+1:2N})) \\
-&=max(m^{(1)}, m^{(2)})
-
+m=\max({x_{:2N}})&=\max(\max({x_{:N}}),\max(x_{N+1:2N}))\\
+&=max(m^{(1)},m^{(2)})
 \end{align}
 $$
 but the $l$  NOT update  as follow when we use safe-softmax
 $$
-l=l_{:2N} \neq l^{(1)}+l^{(2)}
+l=l_{:2N}\neq l^{(1)}+l^{(2)}
 $$
 
 3. So  we cloud based block sum $l^{(t)}$ and max $m^{(t)}$  to **online** update global $l$
@@ -93,19 +92,19 @@ $$
 
 In attention machine, we need softmax for attention score
 $$
-S = QK^T, S \in \mathbb{R}^{N \times N}
+S=QK^T,S\in\mathbb{R}^{N\times N}
 $$
-the query is row-wise matrix $Q\in \mathbb{R}^{N \times D}$;
+the query is row-wise matrix $Q\in\mathbb{R}^{N\times D}$;
 
 and we need softmax attention score:
 $$
-P_{i,:} = \text{softmax}(S_{i,:})
+P_{i,:}=\text{softmax}(S_{i,:})
 $$
 when we use online-softmax, we could parallel update k-row max $M^{(t)}$ and row-wise sum $L^{(t)}$, 
 $$
-L = L^{(1)} (e^{M^{(1)}-M}) +L^{(2)}(e^{M^{(2)}-M})
+L = L^{(1)}(e^{M^{(1)}-M})+L^{(2)}(e^{M^{(2)}-M})
 $$
-where $L,M \in \mathbb{R}^{k \times 1}$
+where $L,M\in\mathbb{R}^{k\times 1}$
 
 ## Implemention
 
