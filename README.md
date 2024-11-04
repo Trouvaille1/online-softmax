@@ -57,17 +57,17 @@ m^{(2)} &= \max(x_{N+1:2N}) \\
 $$
 
 2. it’s easy to update global $m$ and $l$ 
-   $$
-   \begin{align}
-   m=\max({x_{:2N}}) &= \max(\max({x_{:N}}), \max(x_{N+1:2N})) \\
-   &=max(m^{(1)}, m^{(2)})
-   
-   \end{align}
-   $$
-   but the $l$  NOT update  as follow when we use safe-softmax
-   $$
-   l=l_{:2N} \neq l^{(1)}+l^{(2)}
-   $$
+$$
+\begin{align}
+m=\max({x_{:2N}}) &= \max(\max({x_{:N}}), \max(x_{N+1:2N})) \\
+&=max(m^{(1)}, m^{(2)})
+
+\end{align}
+$$
+but the $l$  NOT update  as follow when we use safe-softmax
+$$
+l=l_{:2N} \neq l^{(1)}+l^{(2)}
+$$
 
 3. So  we cloud based block sum $l^{(t)}$ and max $m^{(t)}$  to **online** update global $l$
 
@@ -75,16 +75,10 @@ $$
 \begin{align}
 l^{(1)}&= \sum_j^N e^{x_j-\max(x_{:N})} = \sum_j^N e^{x_j-m^{(1)}}\\
 l^{(2)} &= \sum_{j=N+1}^{2N} e^{x_j-\max(x_{{N+1}:2N})} = \sum_{j=N+1}^{2N} e^{x_j-m^{(2)}}\\
-
 l &= \sum_{j}^{2N} e^{x_j-\max(x_{:2N})} \\
-
 &= (\sum_j^N e^{x_j-\max(x_{:2N})}) +(\sum_{j=N+1}^{2N}e^{x_j-\max(x_{:2N})}) \\
-
-
 &= (\sum_j^N e^{x_j-m}) +(\sum_{j=N+1}^{2N}e^{x_j-m}) \\
-
 &= (\sum_j^N e^{x_j-m^{(1)}}) (e^{m^{(1)}-m}) +(\sum_{j=N+1}^{2N}e^{x_j-m^{(2)}})(e^{m^{(2)}-m}) \\
-
 &= l^{(1)} (e^{m^{(1)}-m}) +l^{(2)}(e^{m^{(2)}-m})
 \end{align}
 $$
