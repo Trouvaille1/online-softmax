@@ -17,9 +17,9 @@ $$
 
 ### online softmax
 
-1. we could calculate  `1:N`  element $\max(x_{:N})$ and $l_N$
+1. We first compute  `1:N`  element maximum value $\max(x_{:N})$ and softmax denominator $l_N$
 
-2. when we add one element  $x_{N+1}$, we should update $\max(x_{:N+1})$ and update $l_{N+1}$ as follow. 
+2. We add a new element  $x_{N+1}$, we update $\max(x_{:N+1})$ and update $l_{N+1}$ as follow. 
 
 $$
 \begin{align}
@@ -33,9 +33,9 @@ l_{N+1} &= \sum_j^{N+1} e^{x_j-\max(x_{:N+1})} \\
 \end{align}
 $$
 
-​	why not use $l_{N+1}=l_{N}+x_{N+1}$, because safe softmax need all element sub a same max value.
+​	we cannot use $l_{N+1}=l_{N}+x_{N+1}$, because safe softmax need all element subtract the same maximum value.
 
-3. we could softmax with updated numerator and denominator
+3. We can apply the softmax function using the adjusted numerator and denominator values.
 
 $$
 \tilde{x}_{i}=\frac{e^{x_i-\max(x_{:N+1})}}{l_{N+1}}
@@ -43,9 +43,9 @@ $$
 
 ### block online softmax
 
-online softmax make denominator sum $l$ dynamic update while a new element added. It's more effiecent method is to update sum $l$ with block-wise element added. This advantage is we could parallelism to calculate online softmax
+online softmax make  cumulative sum $l$ dynamic update while a new element added. It's more effiecent method is to update sum $l$ with block-wise element added. This advantage is we could parallelism to compute online softmax
 
-1. we cloud seperate calculate different block $l^{(t)}$  and $m^{(t)}$
+1. we seperate compute different block $l^{(t)}$  and $m^{(t)}$
 
 $$
 \begin{align}
@@ -63,12 +63,12 @@ m=\max({x_{:2N}})&=\max(\max({x_{:N}}),\max(x_{N+1:2N}))\\
 &=max(m^{(1)},m^{(2)})
 \end{align}
 $$
-but the $l$  NOT update  as follow when we use safe-softmax
+but the $l$  NOT update  as follow：
 $$
 l=l_{:2N}\neq l^{(1)}+l^{(2)}
 $$
 
-3. So  we cloud based block sum $l^{(t)}$ and max $m^{(t)}$  to **online** update global $l$
+3. So we based block sum $l^{(t)}$ and max $m^{(t)}$  to **online** update global $l$
 
 $$
 \begin{align}
@@ -82,7 +82,7 @@ l &= \sum_{j}^{2N} e^{x_j-\max(x_{:2N})} \\
 \end{align}
 $$
 
-4. we cloud online update block softmax like:
+4. update block softmax like:
 
 $$
 \tilde{x}_{i} =\frac{e^{x_i-m}}{l}
@@ -90,7 +90,7 @@ $$
 
 ### batch online softmax
 
-In attention machine, we need softmax for attention score
+In attention machine, we need softmax for attention score matrix
 $$
 S=QK^T,S\in\mathbb{R}^{N\times N}
 $$
@@ -119,7 +119,7 @@ print(X_softmax)
 
 X_block = torch.split(X, split_size_or_sections = 3 , dim = 0) 
 
-# we parallel calculate  different block max & sum
+# we parallel compute  different block max & sum
 X_block_0_max = X_block[0].max()
 X_block_0_sum = torch.exp(X_block[0] - X_block_0_max).sum()
 
