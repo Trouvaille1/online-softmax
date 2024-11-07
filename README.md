@@ -1,6 +1,42 @@
 # online-softmax
 simplest online-softmax notebook for explain Flash Attention
 
+## Implemention
+
+run `online_softmax_torch.ipynb`
+
+we show the block online softmax result
+
+```python
+X = torch.tensor([-0.3, 0.2, 0.5, 0.7, 0.1, 0.8])
+X_softmax = F.softmax(X, dim = 0)
+print(X_softmax)
+
+X_block = torch.split(X, split_size_or_sections = 3 , dim = 0) 
+
+# we parallel compute  different block max & sum
+X_block_0_max = X_block[0].max()
+X_block_0_sum = torch.exp(X_block[0] - X_block_0_max).sum()
+
+X_block_1_max = X_block[1].max()
+X_block_1_sum = torch.exp(X_block[1] - X_block_1_max).sum()
+
+# online block update max & sum
+X_block_1_max_update = torch.max(X_block_0_max, X_block_1_max) # X[-1] is new data
+X_block_1_sum_update = X_block_0_sum * torch.exp(X_block_0_max - X_block_1_max_update) \
+                     + torch.exp(X_block[1] - X_block_1_max_update).sum() # block sum
+
+X_block_online_softmax = torch.exp(X - X_block_1_max_update) / X_block_1_sum_update
+print(X_block_online_softmax)
+```
+
+output is 
+
+```
+tensor([0.0827, 0.1364, 0.1841, 0.2249, 0.1234, 0.2485])
+tensor([0.0827, 0.1364, 0.1841, 0.2249, 0.1234, 0.2485])
+```
+
 ## Softmax Series
 
 ### softmax 
@@ -105,42 +141,6 @@ $$
 L = L^{(1)}(e^{M^{(1)}-M})+L^{(2)}(e^{M^{(2)}-M})
 $$
 where $L,M\in\mathbb{R}^{k\times 1}$
-
-## Implemention
-
-run `online_softmax_torch.ipynb`
-
-we show the block online softmax result
-
-```python
-X = torch.tensor([-0.3, 0.2, 0.5, 0.7, 0.1, 0.8])
-X_softmax = F.softmax(X, dim = 0)
-print(X_softmax)
-
-X_block = torch.split(X, split_size_or_sections = 3 , dim = 0) 
-
-# we parallel compute  different block max & sum
-X_block_0_max = X_block[0].max()
-X_block_0_sum = torch.exp(X_block[0] - X_block_0_max).sum()
-
-X_block_1_max = X_block[1].max()
-X_block_1_sum = torch.exp(X_block[1] - X_block_1_max).sum()
-
-# online block update max & sum
-X_block_1_max_update = torch.max(X_block_0_max, X_block_1_max) # X[-1] is new data
-X_block_1_sum_update = X_block_0_sum * torch.exp(X_block_0_max - X_block_1_max_update) \
-                     + torch.exp(X_block[1] - X_block_1_max_update).sum() # block sum
-
-X_block_online_softmax = torch.exp(X - X_block_1_max_update) / X_block_1_sum_update
-print(X_block_online_softmax)
-```
-
-output is 
-
-```
-tensor([0.0827, 0.1364, 0.1841, 0.2249, 0.1234, 0.2485])
-tensor([0.0827, 0.1364, 0.1841, 0.2249, 0.1234, 0.2485])
-```
 
 ## Reference
 
