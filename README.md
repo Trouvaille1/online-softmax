@@ -51,6 +51,17 @@ $$
 \tilde{x}_i=\frac{e^{x_i-\max(x_{:N})}}{\sum_j^Ne^{x_j-\max(x_{:N})}}
 $$
 
+Note $M=max(x_:N)$, so
+$$
+\begin{align}
+\tilde{x}_i &=\frac{e^{x_i-\max(x_{:N})}}{\sum_j^Ne^{x_j-\max(x_{:N})}}\\
+&=\frac{e^{x_i-M}}{\sum_j^Ne^{x_j-M}}\\
+&=\frac{e^{x_i}/e^{M}}{\sum_j^Ne^{x_j}/e^{M}} \\
+&=\frac{e^{x_i}}{\sum_j^Ne^{x_j}} \\
+\end{align}
+$$
+
+
 ### online softmax
 
 1. We first compute  `1:N`  element maximum value $\max(x_{:N})$ and softmax denominator $l_N$
