@@ -135,6 +135,17 @@ $$
 \tilde{x}_{i} =\frac{e^{x_i-m}}{l}
 $$
 
+### multi block online softmax
+
+we do multi block online softmax by for-loop :
+$$
+l_\text{new}= l_\text{old} (e^{m_\text{old}-m}) +l_\text{new}(e^{m_{\text{new}}-m})
+$$
+noted current block max/sum as $m_\text{new},l_\text{new}$ ,the m is $m=\max(m_\text{old},m_\text{new})$, and then update:
+$$
+l_\text{old} \leftarrow l_\text{new}
+$$
+
 ### batch online softmax
 
 In attention machine, we need softmax for attention score matrix
