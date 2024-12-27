@@ -1,6 +1,8 @@
 # online-softmax
 simplest online-softmax notebook for explain Flash Attention
 
+Blog link: **[手撕Online-Softmax](https://zhuanlan.zhihu.com/p/5078640012)**
+
 ## Implemention
 
 run `online_softmax_torch.ipynb`
